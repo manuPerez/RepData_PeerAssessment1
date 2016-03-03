@@ -1,0 +1,92 @@
+---
+title: "Analysis of US Storm Data for Human and Economic Impact"
+author: "Manu Perez"
+date: "February 15, 2016"
+output: html_document
+---
+
+##### Which relation exists between severe weather events and humans? What is the economic impact?
+
+##### This questions and others can be answered by statistic. And, may be in the future, we would can prevent the outcomes to the extent possible.
+
+##### In this paper, we will try to answere there questions. For this, we will use the US Storm data from the NOAA Storm Database.
+
+
+### Data Processing
+##### First, we load the data. You can download the data from https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2FStormData.csv.bz2
+
+```{r}
+cache=TRUE
+path <- "D:/Cursos/Coursera/Curso Data Science Specialization 5. Reproducible Research/week 4/"
+stormdata <- read.csv(paste(path,"repdata-data-StormData.csv", sep=""))
+```
+
+##### Because in the earlier years of the database there are generally fewer events recorded, we will work only with data of the last 20 years.
+
+```{r}
+stormdata$YEAR <- as.numeric(format(as.Date(stormdata$BGN_DATE, '%m/%d/%Y'), '%Y'))
+stormdata20 <- stormdata[stormdata$YEAR >= 1981,]
+
+```
+
+##### We also clean data that did not have any property damages or crop damage and no fatalities or injuries.
+
+```{r}
+stormdata20 <- stormdata20[(stormdata20$PROPDMG > 0 | stormdata20$CROPDMG > 0 | stormdata20$FATALITIES > 0 | stormdata20$INJURIES > 0),]
+
+```
+
+##### We will aggregate the data by summing up the various Values by Event Type
+
+```{r}
+stormdataAggregated <- aggregate(cbind(stormdata20$PROPDMG, stormdata20$CROPDMG, stormdata20$FATALITIE, stormdata20$INJURIES) ~ stormdata20$EVTYPE, stormdata20, sum)
+
+```
+
+### Results
+
+##### We only visualize the first 5 results.
+##### With respect to property damage, TORNADO is the most dangerous weather event.
+
+```{r}
+stormdataPD <- stormdataAggregated[order(-stormdataAggregated[,"V1"]),]
+stormdataPD <- stormdataPD[1:5,]
+stormdataPD
+```
+
+##### Plot the data
+```{r}
+legPD <- as.vector(stormdataPD[,1])
+barplot(c(as.numeric(unlist(stormdataPD["V1"]))), legend.text=legPD, main="Events with Highest Property Damage", col=heat.colors(5))
+
+```
+
+##### With respect to crop damage, HAIL is the most dangerous weather event.
+
+```{r}
+stormdataCD <- stormdataAggregated[order(-stormdataAggregated[,"V2"]),]
+stormdataCD <- stormdataCD[1:5,]
+stormdataCD
+```
+##### Plot the data
+```{r}
+legCD <- as.vector(stormdataCD[,1])
+barplot(c(as.numeric(unlist(stormdataCD["V2"]))), legend.text=legCD, main="Events with Highest Crop Damage", col=heat.colors(5))
+```
+
+##### With respect to population impact, first, we combine fatalities and injuries.
+
+```{r}
+stormdataAggregated$POPIMP <- stormdataAggregated[,"V3"] + stormdataAggregated[,"V4"]
+stormdataPI <- stormdataAggregated[order(-stormdataAggregated$POPIMP),]
+stormdataPI <- stormdataPI[1:5,]
+stormdataPI
+```
+
+##### Then, we can see that TORNADO is the most important population impact.
+
+##### Plot the data
+```{r}
+legPI <- as.vector(stormdataPI[,1])
+barplot(c(as.numeric(unlist(stormdataPI$POPIMP))), legend.text=legPI, main="Events with Highest Population Impact", col=heat.colors(5))
+```

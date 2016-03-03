@@ -1,8 +1,8 @@
 ---
 title: "Reproducible Research: Peer Assessment 1"
 output: 
-  html_document:
-    keep_md: true
+html_document:
+keep_md: true
 ---
 
 
@@ -115,13 +115,13 @@ nrow(activity[is.na(activity$steps) | is.na(activity$interval) | is.na(activity$
 
 ```{r}
 new.values <- function(steps, interval){
-  newValue <- NA
-  if (!is.na(steps)) 
-    newValue <- c(steps) 
-  else 
-    newValue <- (averages[averages$interval == interval, "steps"])
-  return(newValue)
-}
+    newValue <- NA
+    if (!is.na(steps)) 
+        newValue <- c(steps) 
+    else 
+        newValue <- (averages[averages$interval == interval, "steps"])
+    return(newValue)
+    }
 
 ```
 
@@ -189,16 +189,16 @@ median(total.newsStepsPerDay)
 
 ```{r}
 weekdays.vs.weekends <- function(date){
-day <- weekdays(date)
-weekdays <- weekdays(Sys.Date()+2:6)
-weekends <- weekdays(Sys.Date()+0:1)
-if(day %in% weekdays)
-return ("weekday")
-else if(day %in% weekends)
-return("weekend")
-else
-stop("invalid date")
-}
+    day <- weekdays(date)
+    weekdays <- weekdays(Sys.Date()+2:6)
+    weekends <- weekdays(Sys.Date()+0:1)
+    if(day %in% weekdays)
+        return ("weekday")
+    else if(day %in% weekends)
+        return("weekend")
+    else
+        stop("invalid date")
+    }
 
 aux.data <- newActivity
 aux.data$date <- as.Date(aux.data$date)
